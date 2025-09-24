@@ -9,8 +9,6 @@ import 'package:provider/provider.dart';
 import '../../../utility/color_list.dart';
 import '../../../utility/constants.dart';
 
-
-
 class SubCategoryListSection extends StatelessWidget {
   const SubCategoryListSection({
     Key? key,
@@ -61,10 +59,12 @@ class SubCategoryListSection extends StatelessWidget {
                       dataProvider.subCategories[index],
                       index + 1,
                       edit: () {
-                        showAddSubCategoryForm(context, dataProvider.subCategories[index]);
+                        showAddSubCategoryForm(
+                            context, dataProvider.subCategories[index]);
                       },
                       delete: () {
-                        context.subCategoryProvider.deleteSubCategory(dataProvider.subCategories[index]);
+                        context.subCategoryProvider.deleteSubCategory(
+                            dataProvider.subCategories[index]);
                       },
                     ),
                   ),
@@ -78,7 +78,8 @@ class SubCategoryListSection extends StatelessWidget {
   }
 }
 
-DataRow subCategoryDataRow(SubCategory subCatInfo, int index, {Function? edit, Function? delete}) {
+DataRow subCategoryDataRow(SubCategory subCatInfo, int index,
+    {Function? edit, Function? delete}) {
   return DataRow(
     cells: [
       DataCell(
@@ -93,9 +94,14 @@ DataRow subCategoryDataRow(SubCategory subCatInfo, int index, {Function? edit, F
               ),
               child: Text(index.toString(), textAlign: TextAlign.center),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
-              child: Text(subCatInfo.name ?? ''),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+                child: Text(
+                  subCatInfo.name ?? '',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ),
           ],
         ),

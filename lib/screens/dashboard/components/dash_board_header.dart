@@ -1,7 +1,9 @@
 import 'package:admin/utility/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import '../../../utility/constants.dart';
+import '../../../core/routes/app_pages.dart';
 
 class DashBoardHeader extends StatelessWidget {
   const DashBoardHeader({
@@ -17,8 +19,7 @@ class DashBoardHeader extends StatelessWidget {
           style: Theme.of(context).textTheme.titleLarge,
         ),
         Spacer(flex: 1),
-        Expanded(
-            child: SearchField(
+        Expanded(child: SearchField(
           onChange: (val) {
             context.dataProvider.filterProducts(val);
           },
@@ -47,18 +48,28 @@ class ProfileCard extends StatelessWidget {
         borderRadius: const BorderRadius.all(Radius.circular(10)),
         border: Border.all(color: Colors.white10),
       ),
-      child: Row(
-        children: [
-          Image.asset(
-            "assets/images/profile_pic.png",
-            height: 38,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: defaultPadding / 2),
-            child: Text("Mallesh Pareet"),
-          ),
-          Icon(Icons.keyboard_arrow_down),
-        ],
+      child: PopupMenuButton<String>(
+        color: secondaryColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(color: Colors.white10),
+        ),
+        itemBuilder: (context) => [],
+        onSelected: (value) {},
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundImage: AssetImage("assets/images/profile_pic.png"),
+              radius: 19,
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: defaultPadding / 2),
+              child: Text("Mallesh Pareet"),
+            ),
+            Icon(Icons.keyboard_arrow_down),
+          ],
+        ),
       ),
     );
   }

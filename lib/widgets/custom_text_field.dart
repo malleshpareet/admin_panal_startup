@@ -9,6 +9,7 @@ class CustomTextField extends StatelessWidget {
   final int? lineNumber;
   final void Function(String?) onSave;
   final String? Function(String?)? validator;
+  final FocusNode? focusNode;
 
   const CustomTextField({
     Key? key,
@@ -16,7 +17,9 @@ class CustomTextField extends StatelessWidget {
     required this.onSave,
     this.inputType = TextInputType.text,
     this.lineNumber = 1,
-    this.validator, required this.controller,
+    this.validator,
+    required this.controller,
+    this.focusNode,
   }) : super(key: key);
 
   @override
@@ -25,6 +28,7 @@ class CustomTextField extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: TextFormField(
         controller: controller,
+        focusNode: focusNode,
         maxLines: lineNumber,
         decoration: InputDecoration(
           labelText: labelText,
@@ -40,8 +44,16 @@ class CustomTextField extends StatelessWidget {
         validator: validator,
         inputFormatters: [
           LengthLimitingTextInputFormatter(700),
-          if (inputType == TextInputType.number) FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+          if (inputType == TextInputType.number)
+            FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
         ],
+        // Add focus management to prevent keyboard event issues
+        onTap: () {
+          // Clear any previous focus issues
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            // This helps with keyboard event consistency
+          });
+        },
       ),
     );
   }

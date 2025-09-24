@@ -54,10 +54,12 @@ class BrandListSection extends StatelessWidget {
                   ],
                   rows: List.generate(
                     dataProvider.brands.length,
-                    (index) => brandDataRow(dataProvider.brands[index], index + 1, edit: () {
+                    (index) => brandDataRow(
+                        dataProvider.brands[index], index + 1, edit: () {
                       showBrandForm(context, dataProvider.brands[index]);
                     }, delete: () {
-                      context.brandProvider.deleteBrand(dataProvider.brands[index]);
+                      context.brandProvider
+                          .deleteBrand(dataProvider.brands[index]);
                     }),
                   ),
                 );
@@ -70,7 +72,8 @@ class BrandListSection extends StatelessWidget {
   }
 }
 
-DataRow brandDataRow(Brand brandInfo, int index, {Function? edit, Function? delete}) {
+DataRow brandDataRow(Brand brandInfo, int index,
+    {Function? edit, Function? delete}) {
   return DataRow(
     cells: [
       DataCell(
@@ -85,9 +88,14 @@ DataRow brandDataRow(Brand brandInfo, int index, {Function? edit, Function? dele
               ),
               child: Text(index.toString(), textAlign: TextAlign.center),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
-              child: Text(brandInfo.name!),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+                child: Text(
+                  brandInfo.name ?? '',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ),
           ],
         ),

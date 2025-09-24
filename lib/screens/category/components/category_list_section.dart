@@ -1,4 +1,4 @@
- import 'package:admin/utility/extensions.dart';
+import 'package:admin/utility/extensions.dart';
 
 import '../../../core/data/data_provider.dart';
 import 'package:flutter/material.dart';
@@ -50,10 +50,13 @@ class CategoryListSection extends StatelessWidget {
                   ],
                   rows: List.generate(
                     dataProvider.categories.length,
-                    (index) => categoryDataRow(dataProvider.categories[index], delete: () {
-                     context.categoryProvider.deleteCategory(dataProvider.categories[index]);
+                    (index) => categoryDataRow(dataProvider.categories[index],
+                        delete: () {
+                      context.categoryProvider
+                          .deleteCategory(dataProvider.categories[index]);
                     }, edit: () {
-                      showAddCategoryForm(context, dataProvider.categories[index]);
+                      showAddCategoryForm(
+                          context, dataProvider.categories[index]);
                     }),
                   ),
                 );
@@ -76,13 +79,19 @@ DataRow categoryDataRow(Category CatInfo, {Function? edit, Function? delete}) {
               CatInfo.image ?? '',
               height: 30,
               width: 30,
-              errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+              errorBuilder: (BuildContext context, Object exception,
+                  StackTrace? stackTrace) {
                 return Icon(Icons.error);
               },
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
-              child: Text(CatInfo.name ?? ''),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+                child: Text(
+                  CatInfo.name ?? '',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ),
           ],
         ),

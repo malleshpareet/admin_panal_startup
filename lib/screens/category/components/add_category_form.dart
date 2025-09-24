@@ -8,15 +8,34 @@ import '../../../utility/constants.dart';
 import '../../../widgets/category_image_card.dart';
 import '../../../widgets/custom_text_field.dart';
 
-class CategorySubmitForm extends StatelessWidget {
+class CategorySubmitForm extends StatefulWidget {
   final Category? category;
 
   const CategorySubmitForm({super.key, this.category});
 
   @override
+  State<CategorySubmitForm> createState() => _CategorySubmitFormState();
+}
+
+class _CategorySubmitFormState extends State<CategorySubmitForm> {
+  late FocusNode _nameFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameFocusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _nameFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    context.categoryProvider.setDataForUpdateCategory(category);
+    context.categoryProvider.setDataForUpdateCategory(widget.category);
     return SingleChildScrollView(
       child: Form(
         key: context.categoryProvider.addCategoryFormKey,
@@ -36,9 +55,11 @@ class CategorySubmitForm extends StatelessWidget {
                   return CategoryImageCard(
                     labelText: "Category",
                     imageFile: catProvider.selectedImage,
-                    imageUrlForUpdateImage: category?.image,
+                    imageUrlForUpdateImage: widget.category?.image,
                     onTap: () {
                       catProvider.pickImage();
+                      // Unfocus text fields when picking image
+                      FocusScope.of(context).unfocus();
                     },
                   );
                 },
@@ -46,6 +67,7 @@ class CategorySubmitForm extends StatelessWidget {
               Gap(defaultPadding),
               CustomTextField(
                 controller: context.categoryProvider.categoryNameCtrl,
+                focusNode: _nameFocusNode,
                 labelText: 'Category Name',
                 onSave: (val) {},
                 validator: (value) {
@@ -65,6 +87,8 @@ class CategorySubmitForm extends StatelessWidget {
                       backgroundColor: secondaryColor,
                     ),
                     onPressed: () {
+                      // Unfocus before closing
+                      FocusScope.of(context).unfocus();
                       Navigator.of(context).pop(); // Close the popup
                     },
                     child: Text('Cancel'),
@@ -77,10 +101,16 @@ class CategorySubmitForm extends StatelessWidget {
                     ),
                     onPressed: () {
                       // Validate and save the form
-                      if (context.categoryProvider.addCategoryFormKey.currentState!.validate()) {
-                        context.categoryProvider.addCategoryFormKey.currentState!.save();
+                      if (context
+                          .categoryProvider.addCategoryFormKey.currentState!
+                          .validate()) {
+                        context
+                            .categoryProvider.addCategoryFormKey.currentState!
+                            .save();
                         context.categoryProvider.submitCategory();
 
+                        // Unfocus before closing
+                        FocusScope.of(context).unfocus();
                         Navigator.of(context).pop();
                       }
                     },
@@ -103,7 +133,9 @@ void showAddCategoryForm(BuildContext context, Category? category) {
     builder: (BuildContext context) {
       return AlertDialog(
         backgroundColor: bgColor,
-        title: Center(child: Text('Add Category'.toUpperCase(), style: TextStyle(color: primaryColor))),
+        title: Center(
+            child: Text('Add Category'.toUpperCase(),
+                style: TextStyle(color: primaryColor))),
         content: CategorySubmitForm(category: category),
       );
     },

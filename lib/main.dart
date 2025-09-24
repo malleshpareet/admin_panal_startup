@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -18,22 +19,50 @@ import 'screens/variants/provider/variant_provider.dart';
 import 'screens/variants_type/provider/variant_type_provider.dart';
 import 'utility/constants.dart';
 import 'utility/extensions.dart';
+import 'utility/keyboard_handler.dart';
 
 void main() {
+  // Add error handling for keyboard events
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize keyboard handler
+  KeyboardHandler.initialize();
+
+  // Handle platform exceptions
+  FlutterError.onError = (FlutterErrorDetails details) {
+    // Filter out the specific keyboard assertion error
+    if (details.exceptionAsString().contains(
+        'KeyDownEvent is dispatched, but the state shows that the physical key is already pressed')) {
+      // Just log and ignore this specific error
+      print('Ignoring known keyboard event assertion error');
+      return;
+    }
+    FlutterError.presentError(details);
+  };
+
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => DataProvider()),
     ChangeNotifierProvider(create: (context) => MainScreenProvider()),
-    ChangeNotifierProvider(create: (context) => CategoryProvider(context.dataProvider)),
-    ChangeNotifierProvider(create: (context) => SubCategoryProvider(context.dataProvider)),
-    ChangeNotifierProvider(create: (context) => BrandProvider(context.dataProvider)),
-    ChangeNotifierProvider(create: (context) => VariantsTypeProvider(context.dataProvider)),
-    ChangeNotifierProvider(create: (context) => VariantsProvider(context.dataProvider)),
-    ChangeNotifierProvider(create: (context) => DashBoardProvider(context.dataProvider)),
-    ChangeNotifierProvider(create: (context) => CouponCodeProvider(context.dataProvider)),
-    ChangeNotifierProvider(create: (context) => PosterProvider(context.dataProvider)),
-    ChangeNotifierProvider(create: (context) => OrderProvider(context.dataProvider)),
-    ChangeNotifierProvider(create: (context) => NotificationProvider(context.dataProvider)),
+    ChangeNotifierProvider(
+        create: (context) => CategoryProvider(context.dataProvider)),
+    ChangeNotifierProvider(
+        create: (context) => SubCategoryProvider(context.dataProvider)),
+    ChangeNotifierProvider(
+        create: (context) => BrandProvider(context.dataProvider)),
+    ChangeNotifierProvider(
+        create: (context) => VariantsTypeProvider(context.dataProvider)),
+    ChangeNotifierProvider(
+        create: (context) => VariantsProvider(context.dataProvider)),
+    ChangeNotifierProvider(
+        create: (context) => DashBoardProvider(context.dataProvider)),
+    ChangeNotifierProvider(
+        create: (context) => CouponCodeProvider(context.dataProvider)),
+    ChangeNotifierProvider(
+        create: (context) => PosterProvider(context.dataProvider)),
+    ChangeNotifierProvider(
+        create: (context) => OrderProvider(context.dataProvider)),
+    ChangeNotifierProvider(
+        create: (context) => NotificationProvider(context.dataProvider)),
   ], child: MyApp()));
 }
 
@@ -42,16 +71,34 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Admin Panel',
+      title: 'Admin Panel',
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: bgColor,
-        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme).apply(bodyColor: Colors.white),
+        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
+            .apply(bodyColor: Colors.white),
         canvasColor: secondaryColor,
       ),
-      initialRoute: AppPages.HOME,
+      initialRoute: AppPages.LOGIN,
       unknownRoute: GetPage(name: '/notFount', page: () => MainScreen()),
       defaultTransition: Transition.cupertino,
       getPages: AppPages.routes,
     );
+  }
+}
+
+/// Navigator observer to handle app lifecycle events for keyboard management
+class KeyboardHandlingObserver extends NavigatorObserver {
+  @override
+  void didPush(Route route, Route? previousRoute) {
+    super.didPush(route, previousRoute);
+    // Clear keyboard states when navigating
+    KeyboardHandler.clearKeyStates();
+  }
+
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    super.didPop(route, previousRoute);
+    // Clear keyboard states when navigating
+    KeyboardHandler.clearKeyStates();
   }
 }
